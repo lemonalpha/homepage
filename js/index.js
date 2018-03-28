@@ -1,6 +1,9 @@
 window.onload=function(){
 var textInput=document.getElementById('txtInput');
-window.search = 'https://www.baidu.com/s?word=';
+window.array = new Array();
+window.array[0] = {url:'https://www.baidu.com/s?word=',img:'img/baidu-logo.png'};
+window.array[1] = {url:'https://www.google.com/search?q=',img:'img/google-logo.png'};
+window.index = 0;
 EventUtil.addHandler(txtInput,'input',onInput);
 EventUtil.addHandler(txtInput,'focus',showList);
 EventUtil.addHandler(window,'click',hideList);
@@ -95,7 +98,7 @@ function fn(data){
 		var target=e.target||e.srcElement;
 		if(target.tagName.toLowerCase()==="li"){
 			var wd=target.innerHTML;
-			window.open(window.search + wd);
+			window.open(window.array[window.index].url + wd);
 			//打开新窗口，搜索新页面
 		}
 	});
@@ -128,39 +131,41 @@ function resetStyle(target){
 	});
 }
 function onKeydown(e){
-if(e.keyCode!='37'&&e.keyCode!='38'&&e.keyCode!='39'&&e.keyCode!='40'&&e.keyCode!='13'){
-	return;
-}
-var ulList=document.getElementsByTagName('ul')[0];
+	if(e.keyCode!='37'&&e.keyCode!='38'&&e.keyCode!='39'&&e.keyCode!='40'&&e.keyCode!='13'){
+		return;
+	}
+	if (e.keyCode == 37){//左
+		window.index -= 1
+		if (window.index < 0){window.index = window.array.length - 1}
+		var img = document.getElementById('logo')
+		img.src = window.array[window.index].img
+	}
+	if (e.keyCode == 39){//右
+		window.index += 1
+		if (window.index >= window.array.length){window.index = 0}
+		var img = document.getElementById('logo')
+		img.src = window.array[window.index].img
+	}
+	var ulList=document.getElementsByTagName('ul')[0];
 	if(!EventUtil.hasClass(ulList,'hide')){
 		switch(e.keyCode){
 			case 13: //enter
-			var wd = document.getElementById('txtInput').value
-			window.open(window.search + wd);
+				var wd = document.getElementById('txtInput').value
+				window.open(window.array[window.index].url + wd);
 			break;
 			case 38:  //上
-			if(ulList.dataset.listIndex==-1){
-			ulList.dataset.listIndex=parseInt(ulList.childNodes.length-1);
-			}else{
-				ulList.dataset.listIndex=parseInt(ulList.dataset.listIndex)-1;
-			}
+				if(ulList.dataset.listIndex==-1){
+				ulList.dataset.listIndex=parseInt(ulList.childNodes.length-1);
+				}else{
+					ulList.dataset.listIndex=parseInt(ulList.dataset.listIndex)-1;
+				}
 			break;
 			case 40: //下
-			if(ulList.dataset.listIndex==parseInt(ulList.childNodes.listIndex)-1){
-				ulList.dataset.listIndex=parseInt(-1);
-			}else{
-				ulList.dataset.listIndex=parseInt(ulList.dataset.listIndex)+1;
-			}
-			break;
-			case 37: //左
-				var img = document.getElementById('logo')
-				img.src = "img/baidu-logo.png"
-				window.search = 'https://www.baidu.com/s?word=';
-			break;
-			case 39: //右
-				var img = document.getElementById('logo')
-				img.src = "img/google-logo.png"
-				window.search = 'https://www.google.com/search?q=';
+				if(ulList.dataset.listIndex==parseInt(ulList.childNodes.listIndex)-1){
+					ulList.dataset.listIndex=parseInt(-1);
+				}else{
+					ulList.dataset.listIndex=parseInt(ulList.dataset.listIndex)+1;
+				}
 			break;
 		}
 		if (e.keyCode == 38 || e.keyCode == 40)
@@ -169,7 +174,7 @@ var ulList=document.getElementsByTagName('ul')[0];
 			txtInput.value=(ulList.dataset.listIndex==-1)?ulList.dataset.query:ulList.childNodes[ulList.dataset.listIndex].innerHTML;
 			//重新设置样式
 			resetStyle(ulList.childNodes[ulList.dataset.listIndex]);
-			}
 		}
+	}
 }
 
