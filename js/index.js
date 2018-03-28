@@ -1,5 +1,6 @@
 window.onload=function(){
 var textInput=document.getElementById('txtInput');
+window.search = 'https://www.baidu.com/s?word=';
 EventUtil.addHandler(txtInput,'input',onInput);
 EventUtil.addHandler(txtInput,'focus',showList);
 EventUtil.addHandler(window,'click',hideList);
@@ -57,8 +58,8 @@ function onInput(e){
 	if(e.target.value.trim()!=' '){	
 		var s=document.createElement('script');
 		s.src='http://www.baidu.com/su?&wd='+encodeURI(this.value.trim())+'&p=3&cb=fn';
-//encodeURI()对URI进行编码
-//与encodecomponent区别在于编码的范围不一样(/后者对/线进行编码)
+		//encodeURI()对URI进行编码
+		//与encodecomponent区别在于编码的范围不一样(/后者对/线进行编码)
 		document.body.appendChild(s);
 	}
 }
@@ -94,7 +95,7 @@ function fn(data){
 		var target=e.target||e.srcElement;
 		if(target.tagName.toLowerCase()==="li"){
 			var wd=target.innerHTML;
-			window.open('https://www.baidu.com/s?word=' + wd);
+			window.open(window.search + wd);
 			//打开新窗口，搜索新页面
 		}
 	});
@@ -127,31 +128,48 @@ function resetStyle(target){
 	});
 }
 function onKeydown(e){
-if(e.keyCode!='38'&&e.keyCode!='40'){
+if(e.keyCode!='37'&&e.keyCode!='38'&&e.keyCode!='39'&&e.keyCode!='40'&&e.keyCode!='13'){
 	return;
 }
 var ulList=document.getElementsByTagName('ul')[0];
 	if(!EventUtil.hasClass(ulList,'hide')){
 		switch(e.keyCode){
-			case 38:
+			case 13: //enter
+			var wd = document.getElementById('txtInput').value
+			window.open(window.search + wd);
+			break;
+			case 38:  //上
 			if(ulList.dataset.listIndex==-1){
 			ulList.dataset.listIndex=parseInt(ulList.childNodes.length-1);
 			}else{
 				ulList.dataset.listIndex=parseInt(ulList.dataset.listIndex)-1;
 			}
 			break;
-			case 40:
+			case 40: //下
 			if(ulList.dataset.listIndex==parseInt(ulList.childNodes.listIndex)-1){
 				ulList.dataset.listIndex=parseInt(-1);
 			}else{
 				ulList.dataset.listIndex=parseInt(ulList.dataset.listIndex)+1;
 			}
 			break;
+			case 37: //左
+				var img = document.getElementById('logo')
+				img.src = "img/baidu-logo.png"
+				window.search = 'https://www.baidu.com/s?word=';
+			break;
+			case 39: //右
+				var img = document.getElementById('logo')
+				img.src = "img/google-logo.png"
+				window.search = 'https://www.google.com/search?q=';
+			break;
 		}
-		var txtInput=document.getElementById('txtInput');
-		txtInput.value=(ulList.dataset.listIndex==-1)?ulList.dataset.query:ulList.childNodes[ulList.dataset.listIndex].innerHTML;
-		//重新设置样式
-		resetStyle(ulList.childNodes[ulList.dataset.listIndex]);
+		if (e.keyCode == 38 || e.keyCode == 40)
+		{
+			var txtInput=document.getElementById('txtInput');
+			txtInput.value=(ulList.dataset.listIndex==-1)?ulList.dataset.query:ulList.childNodes[ulList.dataset.listIndex].innerHTML;
+			//重新设置样式
+			resetStyle(ulList.childNodes[ulList.dataset.listIndex]);
+			}
 		}
 }
 
